@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>💖 Sürpriz Site 💖</title>
+<style>
+body {
+  margin:0;
+  padding:0;
+  overflow:hidden;
+  cursor:pointer;
+  height:100vh;
+  background:#111;
+  font-family: Arial, sans-serif;
+  color:#aaa;
+}
+
+.centerBox {
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  text-align:center;
+}
+
+button {
+  padding:10px 20px;
+  margin:10px;
+  font-size:18px;
+  border-radius:10px;
+  border:none;
+  cursor:pointer;
+  transition:0.2s;
+}
+
+button:hover {transform:scale(1.1);}
+
+#messageBox {
+  font-size:40px;
+  font-weight:bold;
+  text-shadow:0 0 10px #555,0 0 20px #888;
+  margin-bottom:20px;
+}
+
+input {
+  font-size:18px;
+  padding:5px;
+  margin-top:10px;
+}
+
+.wrongMessage {
+  font-size:20px;
+  color:#f33;
+  margin-top:15px;
+}
+
+#finalMessage {
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  font-size:50px;
+  color:#ff77aa;
+  font-weight:bold;
+  text-align:center;
+  display:none;
+  text-shadow: 0 0 20px #fff, 0 0 40px #ff77aa;
+}
+</style>
+</head>
+<body>
+
+<div class="centerBox" id="centerBox">
+  <div id="messageBox">Beni seviyor musun?</div>
+  <button id="evetBtn">Evet</button>
+  <button id="hayirBtn">Hayır</button>
+  <div id="wrong" class="wrongMessage"></div>
+</div>
+
+<div id="finalMessage">Seni çok seviyorum, iyi ki varsın iyi geceler güzel gözlü sevgilim 💖</div>
+
+<script>
+const centerBox=document.getElementById('centerBox');
+const messageBox=document.getElementById('messageBox');
+const evetBtn=document.getElementById('evetBtn');
+const hayirBtn=document.getElementById('hayirBtn');
+const wrong=document.getElementById('wrong');
+const finalMessage=document.getElementById('finalMessage');
+
+const questions=[
+  {q:"Beni seviyor musun?", options:["evet","hayır"], a:"evet"},
+  {q:"Üstümdeki ne renk?", options:[], a:"beyaz"},
+  {q:"En sevdiğim içecek?", options:[], a:"ayran"},
+  {q:"En çok istediğim şey?", options:[], a:"seninle olmak"},
+  {q:"Sabah nereye gideceğim?", options:[], a:"hastaneye"},
+  {q:"En sevdiğim film türü?", options:[], a:"bilim kurgu"},
+  {q:"Nerede büyüdüm?", options:[], a:"istanbul"}
+];
+
+let current=0;
+
+// Soruyu göster
+function showQuestion(){
+  wrong.textContent="";
+  let q=questions[current];
+  messageBox.textContent=q.q;
+
+  centerBox.innerHTML='';
+  centerBox.appendChild(messageBox);
+  centerBox.appendChild(wrong);
+
+  if(current===0){
+    centerBox.appendChild(evetBtn);
+    centerBox.appendChild(hayirBtn);
+  } else {
+    let input=document.createElement("input");
+    input.type="text";
+    input.id="answerInput";
+    input.placeholder="Cevabı yaz...";
+    centerBox.appendChild(input);
+
+    let submit=document.createElement("button");
+    submit.textContent="Gönder";
+    submit.onclick=()=>{
+      if(input.value.toLowerCase().trim()===questions[current].a.toLowerCase()){
+        current++;
+        if(current>=questions.length){
+          startButtonSequence();
+        } else {
+          showQuestion();
+        }
+      } else {
+        wrong.textContent="Yanlış cevap! En başa dönüyorsun.";
+        current=0;
+        setTimeout(showQuestion,1000);
+      }
+    };
+    centerBox.appendChild(submit);
+  }
+}
+
+// Başlangıç
+evetBtn.onclick=()=>{
+  current++;
+  showQuestion();
+};
+
+hayirBtn.onclick=()=>{
+  wrong.textContent="Yanlış cevap! En başa dönüyorsun.";
+  current=0;
+  setTimeout(showQuestion,1000);
+};
+
+// Boş buton sırası
+let buttonCount=0;
+
+function startButtonSequence(){
+  centerBox.innerHTML=''; // CenterBox temiz
+  createNewButton();
+}
+
+function createNewButton(){
+  buttonCount++;
+  let btn=document.createElement("button");
+  
+  if(buttonCount<5){
+    btn.textContent=" ";
+  } else {
+    btn.style.display="none"; // son buton yerine finalMessage gösterilecek
+    finalMessage.style.display="block";
+  }
+
+  // Rastgele pozisyon
+  btn.style.position="absolute";
+  btn.style.left=Math.random()*(window.innerWidth-150)+"px";
+  btn.style.top=Math.random()*(window.innerHeight-50)+"px";
+  document.body.appendChild(btn); // artık body’ye ekliyoruz
+
+  btn.onclick=()=>{
+    btn.remove();
+    if(buttonCount<5){
+      createNewButton();
+    }
+  };
+}
+
+showQuestion();
+</script>
+</body>
+</html>
